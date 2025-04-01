@@ -10,6 +10,6 @@ CREATE TABLE IF NOT EXISTS transactions (
   type VARCHAR(10) NOT NULL,
   crypto VARCHAR(50) NOT NULL,
   quantity DECIMAL(20,8) NOT NULL,
-  price DECIMAL(20,8) NOT NULL,        -- при SELL
+  price DECIMAL(20,8) NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
