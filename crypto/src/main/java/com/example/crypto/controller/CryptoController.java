@@ -77,7 +77,7 @@ public class CryptoController {
 
         tradingService.reset();
         Map<String, String> resp = new HashMap<>();
-        resp.put("message", "Балансът е нулиран и данните са изчистени.");
+        resp.put("message", "The balance has been reset and all data has been cleared.");
         return resp;
 
     }
