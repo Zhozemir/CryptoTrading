@@ -40,16 +40,16 @@ public class TradingService {
         BigDecimal price = priceService.getPrice(cryptoSymbol.toUpperCase());
 
         if (price == null || price.compareTo(BigDecimal.ZERO) <= 0)
-            throw new CryptoNotFoundException("Криптовалутата " + cryptoSymbol + " няма валидна цена.");
+            throw new CryptoNotFoundException("The cryptocurrency " + cryptoSymbol + " doesn't have valid price.");
 
         if (quantity.compareTo(BigDecimal.ZERO) <= 0)
-            throw new InvalidQuantityException("Невалидно количество за покупка: " + quantity);
+            throw new InvalidQuantityException("Invalid purchase quantity: " + quantity);
 
         BigDecimal totalCost = price.multiply(quantity);
         BigDecimal currentBalance = balanceService.getBalance();
 
         if (totalCost.compareTo(currentBalance) > 0)
-            throw new InsufficientBalanceException("Недостатъчен баланс за покупка.");
+            throw new InsufficientBalanceException("Insufficient balance for purchase.");
 
         balanceService.subtractFromBalance(totalCost);
 
@@ -75,7 +75,7 @@ public class TradingService {
 
         transactionsRepository.insertTransaction("BUY", cryptoSymbol.toUpperCase(), quantity, price, BigDecimal.ZERO);
 
-        return "Успешна покупка на " + quantity + " " + cryptoSymbol.toUpperCase() + " на цена " + price;
+        return "Successfully purchased " + quantity + " " + cryptoSymbol.toUpperCase() + " at a price of " + price;
     }
 
     public String sellCrypto(String cryptoSymbol, BigDecimal quantity) {
@@ -83,15 +83,15 @@ public class TradingService {
         BigDecimal price = priceService.getPrice(cryptoSymbol.toUpperCase());
 
         if (price == null || price.compareTo(BigDecimal.ZERO) <= 0)
-            throw new CryptoNotFoundException("Криптовалутата " + cryptoSymbol + " няма валидна цена.");
+            throw new CryptoNotFoundException("The cryptocurrency " + cryptoSymbol + " doesn't have a valid price.");
 
         if (quantity.compareTo(BigDecimal.ZERO) <= 0)
-            throw new InvalidQuantityException("Невалидно количество за продажба: " + quantity);
+            throw new InvalidQuantityException("Invalid sale quantity: " + quantity);
 
         List<Map<String, Object>> rows = holdingsRepository.findBySymbol(cryptoSymbol.toUpperCase());
 
         if (rows.isEmpty())
-            throw new InsufficientHoldingsException("Нямате " + cryptoSymbol + " за продаване.");
+            throw new InsufficientHoldingsException("You don't have any " + cryptoSymbol + " to sell.");
 
         Map<String, Object> row = rows.get(0);
         int id = ((Number) row.get("id")).intValue();
@@ -99,7 +99,7 @@ public class TradingService {
         BigDecimal oldCost = (BigDecimal) row.get("average_cost");
 
         if (quantity.compareTo(oldQty) > 0)
-            throw new InsufficientHoldingsException("Опитвате се да продадете повече, отколкото притежавате.");
+            throw new InsufficientHoldingsException("Attempting to sell more than you hold.");
 
         BigDecimal profitLoss = price.subtract(oldCost).multiply(quantity);
         BigDecimal totalGain = price.multiply(quantity);
@@ -115,7 +115,7 @@ public class TradingService {
 
         transactionsRepository.insertTransaction("SELL", cryptoSymbol.toUpperCase(), quantity, price, profitLoss);
 
-        return String.format("Продадени са %.4f %s на цена %.2f. P/L = %.2f USD",
+        return String.format("Sold %.4f %s at a price of %.2f. P/L = %.2f USD",
                 quantity, cryptoSymbol, price, profitLoss);
     }
 
